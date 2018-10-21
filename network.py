@@ -101,8 +101,6 @@ class Host:
             if(self.stop):
                 print (threading.currentThread().getName() + ': Ending')
                 return
-        
-
 
 ## Implements a multi-interface router described in class
 class Router:

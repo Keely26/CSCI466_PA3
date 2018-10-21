@@ -47,7 +47,15 @@ if __name__ == '__main__':
     
     #create some send events    
     for i in range(3):
-        client.udt_send(2, 'Sample data %d' % i)
+        mes = 'Sample data %d, this message is at least 80 characters long that needs to be spilt' % i
+        if len(mes) > 50:
+            mes_1 = mes[0:44]
+            client.udt_send(2, mes_1)
+            mes_2 = mes[50:99]
+            client.udt_send(2, mes_2)
+        else:
+            client.udt_send(2, 'Sample data %d' % i)
+
     
     
     #give the network sufficient time to transfer all packets before quitting
