@@ -32,6 +32,7 @@ if __name__ == '__main__':
     # out interface of client, in interface of server
     # 50 is the MTU - largest size of packet that can be transferred over links
     link_layer.add_link(link_2.Link(client, 0, router_a, 0, 50))
+    # second link MTU set to length 30
     link_layer.add_link(link_2.Link(router_a, 0, server, 0, 30))
     # start all the objects
     thread_L = []
