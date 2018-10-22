@@ -28,12 +28,12 @@ class Interface:
         self.queue.put(pkt, block)
 
 
-## Implements a network layer packet (different from the RDT packet 
+## Implements a network layer packet (different from the RDT packet
 # from programming assignment 2).
 # NOTE: This class will need to be extended to for the packet to include
 # the fields necessary for the completion of this assignment.
 class NetworkPacket:
-    ## packet encoding lengths 
+    ## packet encoding lengths
     dst_addr_S_length = 5
 
     ##@param dst_addr: address of the destination host
@@ -56,9 +56,11 @@ class NetworkPacket:
     # @param byte_S: byte string representation of the packet
     @classmethod
     def from_byte_S(self, byte_S):
-        dst_addr = int(byte_S[0: NetworkPacket.dst_addr_S_length])
-        data_S = byte_S[NetworkPacket.dst_addr_S_length:]
+        dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
+        data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
         return self(dst_addr, data_S)
+
+
 
 
 ## Implements a network host for receiving and transmitting data
@@ -69,7 +71,7 @@ class Host:
         self.addr = addr
         self.in_intf_L = [Interface()]
         self.out_intf_L = [Interface()]
-        self.stop = False  # for thread termination
+        self.stop = False #for thread termination
 
     ## called when printing the object
     def __str__(self):
@@ -79,31 +81,9 @@ class Host:
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
-        packet = []
-        # if length of message is greater than 30
-        # iterate through data_S and segment packets
-        if len(data_S) > 30:
-            i = 0
-            array_iterator = 0
-            while i <= len(data_S):
-                if i + 24 > len(data_S) - 1:
-                    packet[array_iterator] = NetworkPacket(dst_addr, data_S[i: len(data_S) - 1])
-                    break
-                else:
-                    packet[array_iterator] = NetworkPacket(dst_addr, data_S[i: i + 24])
-                    i += 24
-                    array_iterator += 1
-                # loops through and sends segmented packets
-            for i in packet:
-                self.out_intf_L[0].put(packet[i].to_byte_S())
-                print('%s: sending packet "%s" on the out interface with mtu=%d' % (
-                self, packet[i], self.out_intf_L[0].mtu))
-
-
-        else:
-            p = NetworkPacket(dst_addr, data_S)
-            self.out_intf_L[0].put(p.to_byte_S())  # send packets always enqueued successfully
-            print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
+        p = NetworkPacket(dst_addr, data_S)
+        self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
+        print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
 
     ## receive packet from the network layer
     def udt_receive(self):
@@ -113,26 +93,25 @@ class Host:
 
     ## thread target for the host to keep receiving data
     def run(self):
-        print(threading.currentThread().getName() + ': Starting')
+        print (threading.currentThread().getName() + ': Starting')
         while True:
-            # receive data arriving to the in interface
+            #receive data arriving to the in interface
             self.udt_receive()
-            # terminate
-            if (self.stop):
-                print(threading.currentThread().getName() + ': Ending')
+            #terminate
+            if(self.stop):
+                print (threading.currentThread().getName() + ': Ending')
                 return
-
 
 ## Implements a multi-interface router described in class
 class Router:
 
     ##@param name: friendly router name for debugging
-    # @param intf_count: the number of input and output interfaces 
+    # @param intf_count: the number of input and output interfaces
     # @param max_queue_size: max queue length (passed to Interface)
     def __init__(self, name, intf_count, max_queue_size):
-        self.stop = False  # for thread termination
+        self.stop = False #for thread termination
         self.name = name
-        # create a list of interfaces
+        #create a list of interfaces
         self.in_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
         self.out_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
 
@@ -146,26 +125,26 @@ class Router:
         for i in range(len(self.in_intf_L)):
             pkt_S = None
             try:
-                # get packet from interface i
+                #get packet from interface i
                 pkt_S = self.in_intf_L[i].get()
-                # if packet exists make a forwarding decision
+                #if packet exists make a forwarding decision
                 if pkt_S is not None:
-                    p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
-                    # HERE you will need to implement a lookup into the 
+                    p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
+                    # HERE you will need to implement a lookup into the
                     # forwarding table to find the appropriate outgoing interface
                     # for now we assume the outgoing interface is also i
                     self.out_intf_L[i].put(p.to_byte_S(), True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                          % (self, p, i, i, self.out_intf_L[i].mtu))
+                        % (self, p, i, i, self.out_intf_L[i].mtu))
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass
 
     ## thread target for the host to keep forwarding data
     def run(self):
-        print(threading.currentThread().getName() + ': Starting')
+        print (threading.currentThread().getName() + ': Starting')
         while True:
             self.forward()
             if self.stop:
-                print(threading.currentThread().getName() + ': Ending')
+                print (threading.currentThread().getName() + ': Ending')
                 return
