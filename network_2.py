@@ -10,19 +10,23 @@ import threading
 ## wrapper class for a queue of packets
 class Interface:
     is_segmented = True
+    message = ''
     ## @param maxsize - the maximum size of the queue storing packets
+
 
     def __init__(self, maxsize=0):
         self.queue = queue.Queue(maxsize);
         self.mtu = None
         is_segmented = True
 
+    def get_segmented(self):
+        return self.is_segmented
+
     ##get packet from the queue interface
     def get(self):
         # if no more segments to send, enters if statement
-        if not self.is_segmented:
             try:
-                return self.queue.get(False)
+                return self.message
             except queue.Empty:
                 return None
 
@@ -30,7 +34,9 @@ class Interface:
     # @param pkt - Packet to be inserted into the queue
     # @param block - if True, block until room in queue, if False may throw queue.Full exception
     def put(self, pkt, block=False):
-        self.queue.put(pkt, block)
+
+        self.message += pkt
+        self.queue.put(self.message, block)
 
     def set_segmentaion(self, in_segmentation):
         self.is_segmented = in_segmentation
@@ -119,7 +125,8 @@ class Host:
 
     ## receive packet from the network layer
     def udt_receive(self):
-        pkt_S = self.in_intf_L[0].get()
+        if not self.in_intf_L[0].get_segmented():
+            pkt_S = self.in_intf_L[0].get()
         if pkt_S is not None:
             print('%s: received packet "%s" on the in interface' % (self, pkt_S))
 

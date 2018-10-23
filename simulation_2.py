@@ -47,7 +47,8 @@ if __name__ == '__main__':
 
     # create some send events
     for i in range(3):
-        message = 'this is data message %d, this message is at least 80 characters long that needs to be split' % i
+       # message = 'this is data message %d, this message is at least 80 characters long that needs to be split' % i
+        message = 'abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz'
         # splits message into length of 50 char segments.  Accounts for
         client.udt_send(2, message)
 
