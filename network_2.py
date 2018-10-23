@@ -82,21 +82,48 @@ class Host:
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
         p = NetworkPacket(dst_addr, data_S)
-        self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
-        print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
+        print("packet length " , len(p.data_S))
+        if(len(p.data_S) > 30):
+            p1 = NetworkPacket(dst_addr, data_S[0: 24])
+            p2 = NetworkPacket(dst_addr, data_S[24: len(p.data_S) + 1])
+            self.out_intf_L[0].put(p1.to_byte_S()) #send packets always enqueued successfully
+            print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p1, self.out_intf_L[0].mtu))
+            self.out_intf_L[0].put(p2.to_byte_S()) #send packets always enqueued successfully
+            print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p2, self.out_intf_L[0].mtu))
+        else:
+            self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
+            print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
         
     ## receive packet from the network layer
-    def udt_receive(self):
+    def udt_receive(self, list):
+        l = []
+        l = list
+
+
         pkt_S = self.in_intf_L[0].get()
         if pkt_S is not None:
             print('%s: received packet "%s" on the in interface' % (self, pkt_S))
+            if l is None:
+                l = [pkt_S]
+                return l
+            else:
+                #return pkt_S
+                l.append(pkt_S)
+                return l
+
+
        
     ## thread target for the host to keep receiving data
     def run(self):
         print (threading.currentThread().getName() + ': Starting')
+        list = []
         while True:
             #receive data arriving to the in interface
-            self.udt_receive()
+            list = self.udt_receive(list)
+            # list.append(p)
+            if list is not None:
+                print("LIST: ", list[0: len(list) - 1])
+            # print("STRING: ", string)
             #terminate
             if(self.stop):
                 print (threading.currentThread().getName() + ': Ending')
