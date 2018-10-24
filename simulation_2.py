@@ -10,7 +10,7 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0  # 0 means unlimited
-simulation_time = 1  # give the network sufficient time to transfer all packets before quitting
+simulation_time = 4  # give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = []  # keeps track of objects, so we can kill their threads
@@ -48,9 +48,9 @@ if __name__ == '__main__':
     for i in range(3):
         message = 'this is data message %d, this message is at least 80 characters long that needs to be split' % i
         if len(message) > 50:
-            message_1 = message[0:44]
+            message_1 = message[0:45]
             client.udt_send(2, message_1)
-            message_2 = message[50:99]
+            message_2 = message[45:100]
             client.udt_send(2, message_2)
         else:
             client.udt_send(2, message)
