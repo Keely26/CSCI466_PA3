@@ -17,6 +17,7 @@ class Interface:
     ## @param maxsize - the maximum size of the queue storing packets
     def get_done_with_segmenting(self):
         return self.done_with_segmenting
+
     def set_done_with_segment(self, is_done):
         self.done_with_segmenting = is_done
 
@@ -92,43 +93,24 @@ class Host:
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
         p = NetworkPacket(dst_addr, data_S)
-
-        # p1 = NetworkPacket(dst_addr, data_S[: 24])
-        # p2 = NetworkPacket(dst_addr, data_S[24: len(p.data_S) + 1])
-        # self.out_intf_L[0].put(p1.to_byte_S()) #send packets always enqueued successfully
-        # print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p1, self.out_intf_L[0].mtu))
-        # self.out_intf_L[0].put(p2.to_byte_S()) #send packets always enqueued successfully
-        # print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p2, self.out_intf_L[0].mtu))
+        # sets segmentation to true to print the 50 MTU packets
         self.in_intf_L[0].set_done_with_segment(True)
         self.out_intf_L[0].put(p.to_byte_S(), False)  # send packets always enqueued successfully
+        # reset segmentation to false, setup for future 30 MTU packets through link B
         self.in_intf_L[0].set_done_with_segment(False)
-
         print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
 
     ## receive packet from the network layer
     packet = ''
+
     def udt_receive(self):
         pkt_S = self.in_intf_L[0].get()
-        #self.packet += pkt_S
+        # checks if segmentation is done, prints if True
         if self.packet is not None and self.in_intf_L[0].get_done_with_segmenting():
             print('%s: received packet "%s" on the in interface' % (self, pkt_S))
 
-    # def udt_receive(self, list):
-    #     l = []
-    #     l = list
-    #
-    #     pkt_S = self.in_intf_L[0].get()
-    #     if pkt_S is not None:
-    #         print('%s: received packet "%s" on the in interface' % (self, pkt_S))
-    #         if l is None:
-    #             l = [pkt_S]
-    #             return l
-    #         else:
-    #             # return pkt_S
-    #             l.append(pkt_S)
-    #             return l
+        ## thread target for the host to keep receiving data
 
-    ## thread target for the host to keep receiving data
     def run(self):
         print(threading.currentThread().getName() + ': Starting')
         while True:
@@ -138,19 +120,6 @@ class Host:
             if (self.stop):
                 print(threading.currentThread().getName() + ': Ending')
                 return
-        # print(threading.currentThread().getName() + ': Starting')
-        # list = []
-        # while True:
-        #     # receive data arriving to the in interface
-        #     list = self.udt_receive(list)
-        #     # list.append(p)
-        #     if list is not None:
-        #         print("LIST: ", list[0: len(list) - 1])
-        #     # print("STRING: ", string)
-        #     # terminate
-        #     if (self.stop):
-        #         print(threading.currentThread().getName() + ': Ending')
-        #         return
 
 
 ## Implements a multi-interface router described in class
@@ -178,28 +147,31 @@ class Router:
             pkt_S = None
             packet_array = []
             try:
-                #get packet from interface i
+                # get packet from interface i
                 pkt_S = self.in_intf_L[i].get()
-                #if packet exists make a forwarding decision
+                # if packet exists make a forwarding decision
                 if pkt_S is not None:
-                    p = NetworkPacket.from_byte_S(pkt_S) #parse a packet ou
+                    p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet ou
                     ##TODO need to combine packets at host
                     # inputs the first 30 bytes into the interface
-
                     self.out_intf_L[i].put(p.to_byte_S()[0:30], True)
+                    # double check that segmentation is false
                     self.in_intf_L[i].set_done_with_segment(False)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                        % (self, p, i, i, self.out_intf_L[i].mtu))
-                    # inputs the followint bits up to 60
+                          % (self, p, i, i, self.out_intf_L[i].mtu))
+                    # inputs the following bits up to 60
                     self.out_intf_L[i].put(p.to_byte_S()[30:60], True)
+                    # sets segmentation to true to allow printing as packet is done.
                     self.in_intf_L[i].set_done_with_segment(True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                           % (self, p, i, i, self.out_intf_L[i].mtu))
+                    # resets segmentation for future packets
+                    self.in_intf_L[i].set_done_with_segment(False)
+
 
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass
-
 
     ## thread target for the host to keep forwarding data
     def run(self):
