@@ -142,17 +142,14 @@ class Router:
     ## look through the content of incoming interfaces and forward to
     # appropriate outgoing interfaces
     def forward(self):
-        i = 0
         for i in range(len(self.in_intf_L)):
             pkt_S = None
-            packet_array = []
             try:
                 # get packet from interface i
                 pkt_S = self.in_intf_L[i].get()
                 # if packet exists make a forwarding decision
                 if pkt_S is not None:
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet ou
-                    header = p.to_byte_S()[0:5]
                     ##TODO need to combine packets at host
                     # inputs the first 30 bytes into the interface
                     self.out_intf_L[i].put(p.to_byte_S()[0:30], True)
