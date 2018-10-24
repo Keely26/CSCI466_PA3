@@ -187,7 +187,6 @@ class Router:
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                         % (self, p, i, i, self.out_intf_L[i].mtu))
                     # inputs the followint bits up to 60
-                    print(len(p.to_byte_S()[30: 60]))
                     self.out_intf_L[i].put(p.to_byte_S()[30:60], True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                           % (self, p, i, i, self.out_intf_L[i].mtu))
