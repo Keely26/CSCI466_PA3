@@ -152,6 +152,7 @@ class Router:
                 # if packet exists make a forwarding decision
                 if pkt_S is not None:
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet ou
+                    header = p.to_byte_S()[0:5]
                     ##TODO need to combine packets at host
                     # inputs the first 30 bytes into the interface
                     self.out_intf_L[i].put(p.to_byte_S()[0:30], True)
@@ -160,11 +161,16 @@ class Router:
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                           % (self, p.to_byte_S()[0:30], i, i, self.out_intf_L[i].mtu))
                     # inputs the following bits up to 60
+                    # if header needed on second link uncomment the following code and comment out the line under it
+                    # self.out_intf_L[i].put(p.to_byte_S()[0:5] + p.to_byte_S()[30:60])
                     self.out_intf_L[i].put(p.to_byte_S()[30:60], True)
                     # sets segmentation to true to allow printing as packet is done.
                     self.in_intf_L[i].set_done_with_segment(True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                           % (self, p.to_byte_S()[30:60], i, i, self.out_intf_L[i].mtu))
+                    # if header needed on second packet, uncomment the following code and comment out the print statement above
+                    # print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
+                    #       % (self,p.to_byte_S()[0:5] + p.to_byte_S()[30:60], i, i, self.out_intf_L[i].mtu))
                     # resets segmentation for future packets
                     self.in_intf_L[i].set_done_with_segment(False)
 

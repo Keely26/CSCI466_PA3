@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b04159e3-d087-47a8-8cc2-4256c1a72296" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/link_3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/network_3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/simulation_3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/network_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/network_2.py" afterDir="false" />
     </list>
@@ -56,13 +53,13 @@
     <session id="-1981439965">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="3" />
+          <entry key="project.closed" value="6" />
           <entry key="project.open.time.12" value="1" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.open.time.8" value="1" />
+          <entry key="project.open.time.8" value="3" />
           <entry key="project.open.time.9" value="3" />
-          <entry key="project.opened" value="7" />
+          <entry key="project.opened" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -82,14 +79,14 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="3601" />
-          <entry key="txt" value="371" />
+          <entry key="py" value="4000" />
+          <entry key="txt" value="562" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="371" />
-          <entry key="Python" value="3601" />
+          <entry key="PLAIN_TEXT" value="562" />
+          <entry key="Python" value="4000" />
         </counts>
       </usages-collector>
     </session>
@@ -99,8 +96,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/simulation_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1305">
-              <caret line="32" column="18" selection-start-line="32" selection-start-column="18" selection-end-line="32" selection-end-column="18" />
+            <state relative-caret-position="-1315">
+              <caret line="17" column="21" lean-forward="true" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
               <folding>
                 <element signature="e#50#66#0" expanded="true" />
               </folding>
@@ -111,11 +108,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/network_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9">
-              <caret line="166" column="54" selection-start-line="166" selection-start-column="54" selection-end-line="166" selection-end-column="54" />
+            <state relative-caret-position="350">
+              <caret line="172" column="109" lean-forward="true" selection-start-line="172" selection-start-column="109" selection-end-line="172" selection-end-column="109" />
               <folding>
                 <element signature="e#50#62#0" expanded="true" />
-                <marker date="1540356797238" expanded="true" signature="300:347" ph="..." />
+                <marker date="1540385948986" expanded="true" signature="300:347" ph="..." />
               </folding>
             </state>
           </provider>
@@ -149,8 +146,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/simulation_1.py" />
-        <option value="$PROJECT_DIR$/simulation_2.py" />
         <option value="$PROJECT_DIR$/network_1.py" />
+        <option value="$PROJECT_DIR$/simulation_2.py" />
         <option value="$PROJECT_DIR$/network_2.py" />
       </list>
     </option>
@@ -166,7 +163,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -178,6 +174,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -312,7 +309,21 @@
       <option name="project" value="LOCAL" />
       <updated>1540355843305</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fixed router_a forwarding print out error">
+      <created>1540356894223</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1540356894223</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Increased simulation time from 1 to 4 in simulation_2.py.  Packets were being dropped due to a low simulation time.  Works well with 4.">
+      <created>1540357507812</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1540357507812</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TodoView">
@@ -326,20 +337,19 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="35" width="3200" height="1765" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1318328" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13536978" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.9089692" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.9089692" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3995984" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32931727" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3299866" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32931727" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.8815261" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -376,7 +386,9 @@
     <MESSAGE value="Removed print statement" />
     <MESSAGE value="Segmentation true/ false working.  Need to figure out how to combine the packets" />
     <MESSAGE value="REMOVED OLD COMMENTED OUT CODE.  Added TODO.  Cleaned up code and added soe more comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="REMOVED OLD COMMENTED OUT CODE.  Added TODO.  Cleaned up code and added soe more comments" />
+    <MESSAGE value="Fixed router_a forwarding print out error" />
+    <MESSAGE value="Increased simulation time from 1 to 4 in simulation_2.py.  Packets were being dropped due to a low simulation time.  Works well with 4." />
+    <option name="LAST_COMMIT_MESSAGE" value="Increased simulation time from 1 to 4 in simulation_2.py.  Packets were being dropped due to a low simulation time.  Works well with 4." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -444,8 +456,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/simulation_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1305">
-          <caret line="32" column="18" selection-start-line="32" selection-start-column="18" selection-end-line="32" selection-end-column="18" />
+        <state relative-caret-position="-1315">
+          <caret line="17" column="21" lean-forward="true" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
           <folding>
             <element signature="e#50#66#0" expanded="true" />
           </folding>
@@ -461,11 +473,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/network_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9">
-          <caret line="166" column="54" selection-start-line="166" selection-start-column="54" selection-end-line="166" selection-end-column="54" />
+        <state relative-caret-position="350">
+          <caret line="172" column="109" lean-forward="true" selection-start-line="172" selection-start-column="109" selection-end-line="172" selection-end-column="109" />
           <folding>
             <element signature="e#50#62#0" expanded="true" />
-            <marker date="1540356797238" expanded="true" signature="300:347" ph="..." />
+            <marker date="1540385948986" expanded="true" signature="300:347" ph="..." />
           </folding>
         </state>
       </provider>
