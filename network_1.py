@@ -122,6 +122,7 @@ class Router:
     ## look through the content of incoming interfaces and forward to
     # appropriate outgoing interfaces
     def forward(self):
+
         for i in range(len(self.in_intf_L)):
             pkt_S = None
             try:
