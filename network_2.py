@@ -158,13 +158,13 @@ class Router:
                     # double check that segmentation is false
                     self.in_intf_L[i].set_done_with_segment(False)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                          % (self, p, i, i, self.out_intf_L[i].mtu))
+                          % (self, p.to_byte_S()[0:30], i, i, self.out_intf_L[i].mtu))
                     # inputs the following bits up to 60
                     self.out_intf_L[i].put(p.to_byte_S()[30:60], True)
                     # sets segmentation to true to allow printing as packet is done.
                     self.in_intf_L[i].set_done_with_segment(True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                          % (self, p, i, i, self.out_intf_L[i].mtu))
+                          % (self, p.to_byte_S()[30:60], i, i, self.out_intf_L[i].mtu))
                     # resets segmentation for future packets
                     self.in_intf_L[i].set_done_with_segment(False)
 
