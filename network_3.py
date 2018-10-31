@@ -3,6 +3,8 @@ Created on Oct 12, 2016
 
 @author: mwittie
 '''
+# modified by Keely Wiesbeck and Alex Harry
+
 import queue
 import threading
 
@@ -35,7 +37,6 @@ class Interface:
 class NetworkPacket:
     ## packet encoding lengths
     dst_addr_S_length = 5
-
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
     def __init__(self, dst_addr, data_S):
@@ -133,11 +134,8 @@ class Router:
                 #if packet exists make a forwarding decision
                 if pkt_S is not None:
                     p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
-                    # HERE you will need to implement a lookup into the
-                    # forwarding table to find the appropriate outgoing interface
-                    # for now we assume the outgoing interface is also i
-
-                    self.out_intf_L[self.routing_table[i]].put(p.to_byte_S(), True)
+                    # grabs the destination address of the packet and gets the forwarding value from the routing table
+                    self.out_intf_L[self.routing_table[p.dst_addr]].put(p.to_byte_S(), True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                         % (self, p, i, i, self.out_intf_L[i].mtu))
             except queue.Full:
