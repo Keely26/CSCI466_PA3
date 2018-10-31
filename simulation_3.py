@@ -10,29 +10,36 @@ from time import sleep
 
 ##configuration parameters
 router_queue_size = 0  # 0 means unlimited
-simulation_time = 1  # give the network sufficient time to transfer all packets before quitting
+simulation_time = 4  # give the network sufficient time to transfer all packets before quitting
 
 if __name__ == '__main__':
     object_L = []  # keeps track of objects, so we can kill their threads
 
     # create network nodes
+
     host_1 = network_3.Host(1)
     object_L.append(host_1)
     host_2 = network_3.Host(2)
     object_L.append(host_2)
-    router_a = network_3.Router(name='A', intf_count=1, max_queue_size=router_queue_size)
+    # in router forward {i is the in interface, x is the out interface} what i will determine where to route to
+    # created routing tables, pass into the routers
+    # 0 (host 1)is the first in interface passes to out interface 0 (Router B)
+    routing_table_a = {0: 0, 1: 1}
+    router_a = network_3.Router(routing_table_a, name='A', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_a)
-    router_b = network_3.Router(name='B', intf_count=1, max_queue_size=router_queue_size)
+    routing_table_b = {0: 0}
+    router_b = network_3.Router(routing_table_b, name='B', intf_count=1, max_queue_size=router_queue_size)
     object_L.append(router_b)
-    router_c = network_3.Router(name='C', intf_count=1, max_queue_size=router_queue_size)
+    routing_table_c = {0: 0}
+    router_c = network_3.Router(routing_table_c, name='C', intf_count=1, max_queue_size=router_queue_size)
     object_L.append(router_c)
-    router_d = network_3.Router(name='D', intf_count=1, max_queue_size=router_queue_size)
+    routing_table_d = {0: 0, 1: 1}
+    router_d = network_3.Router(routing_table_d, name='D', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_d)
-    host_3 = network_3.Host(1)
+    host_3 = network_3.Host(3)
     object_L.append(host_3)
-    host_4 = network_3.Host(2)
+    host_4 = network_3.Host(4)
     object_L.append(host_4)
-
 
     # create a Link Layer to keep track of links between network nodes
     link_layer = link_3.LinkLayer()
@@ -51,8 +58,6 @@ if __name__ == '__main__':
     link_layer.add_link(link_3.Link(router_d, 0, host_3, 0, 50))
     link_layer.add_link(link_3.Link(router_d, 0, host_4, 0, 50))
 
-
-
     # start all the objects
     thread_L = []
     thread_L.append(threading.Thread(name=host_1.__str__(), target=host_1.run))
@@ -63,8 +68,6 @@ if __name__ == '__main__':
     thread_L.append(threading.Thread(name=router_b.__str__(), target=router_b.run))
     thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
     thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
-
-
 
     thread_L.append(threading.Thread(name="Network", target=link_layer.run))
 
@@ -81,8 +84,6 @@ if __name__ == '__main__':
             host_2.udt_send(2, message_2)
         else:
             host_1.udt_send(2, message)
-
-
 
     # give the network sufficient time to transfer all packets before quitting
     sleep(simulation_time)
