@@ -66,7 +66,7 @@ if __name__ == '__main__':
     thread_L.append(threading.Thread(name=host_4.__str__(), target=host_4.run))
     thread_L.append(threading.Thread(name=router_a.__str__(), target=router_a.run))
     thread_L.append(threading.Thread(name=router_b.__str__(), target=router_b.run))
-    thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
+    thread_L.append(threading.Thread(name=router_c.__str__(), target=router_c.run))
     thread_L.append(threading.Thread(name=router_d.__str__(), target=router_d.run))
 
     thread_L.append(threading.Thread(name="Network", target=link_layer.run))
