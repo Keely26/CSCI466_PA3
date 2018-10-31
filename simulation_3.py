@@ -3,6 +3,8 @@ Created on Oct 12, 2016
 
 @author: mwittie
 '''
+
+# modified by Keely Wiesbeck and Alex Harry
 import network_3
 import link_3
 import threading
@@ -24,16 +26,17 @@ if __name__ == '__main__':
     # in router forward {i is the in interface, x is the out interface} what i will determine where to route to
     # created routing tables, pass into the routers
     # 0 (host 1)is the first in interface passes to out interface 0 (Router B)
-    routing_table_a = {0: 0, 1: 1}
+    # {host to end/or start at: out interface}
+    routing_table_a = {3: 0, 4: 1}
     router_a = network_3.Router(routing_table_a, name='A', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_a)
-    routing_table_b = {0: 0}
+    routing_table_b = {3: 0, 4: 0}
     router_b = network_3.Router(routing_table_b, name='B', intf_count=1, max_queue_size=router_queue_size)
     object_L.append(router_b)
-    routing_table_c = {0: 0}
+    routing_table_c = {3: 0, 4: 0}
     router_c = network_3.Router(routing_table_c, name='C', intf_count=1, max_queue_size=router_queue_size)
     object_L.append(router_c)
-    routing_table_d = {0: 0, 1: 1}
+    routing_table_d = {3: 0, 4: 1}
     router_d = network_3.Router(routing_table_d, name='D', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_d)
     host_3 = network_3.Host(3)
@@ -50,13 +53,13 @@ if __name__ == '__main__':
     # out interface of client, in interface of server
     # 50 is the MTU - largest size of packet that can be transferred over links
     link_layer.add_link(link_3.Link(host_1, 0, router_a, 0, 50))
-    link_layer.add_link(link_3.Link(host_2, 0, router_a, 0, 50))
+    link_layer.add_link(link_3.Link(host_2, 0, router_a, 1, 50))
     link_layer.add_link(link_3.Link(router_a, 0, router_b, 0, 50))
-    link_layer.add_link(link_3.Link(router_a, 0, router_c, 0, 50))
+    link_layer.add_link(link_3.Link(router_a, 1, router_c, 0, 50))
     link_layer.add_link(link_3.Link(router_b, 0, router_d, 0, 50))
-    link_layer.add_link(link_3.Link(router_c, 0, router_d, 0, 50))
+    link_layer.add_link(link_3.Link(router_c, 0, router_d, 1, 50))
     link_layer.add_link(link_3.Link(router_d, 0, host_3, 0, 50))
-    link_layer.add_link(link_3.Link(router_d, 0, host_4, 0, 50))
+    link_layer.add_link(link_3.Link(router_d, 1, host_4, 0, 50))
 
     # start all the objects
     thread_L = []
@@ -75,15 +78,17 @@ if __name__ == '__main__':
         t.start()
 
     # create some send events
+    # host 1 to host 3
+    # host 2 to host 4
     for i in range(3):
-        message = 'this is data message %d, this message is at least 80 characters long that needs to be split' % i
-        if len(message) > 50:
-            message_1 = message[0:45]
-            host_1.udt_send(2, message_1)
-            message_2 = message[45:100]
-            host_2.udt_send(2, message_2)
+        message = 'this is data message %d' % i
+        # if statement to change which host to send to (host 3 or host 4)
+        if i == 0 or i == 2:
+            host_1.udt_send(3, message)
+            print("Destination host: 3")
         else:
-            host_1.udt_send(2, message)
+            host_2.udt_send(4, message)
+            print("Destination host: 4")
 
     # give the network sufficient time to transfer all packets before quitting
     sleep(simulation_time)
