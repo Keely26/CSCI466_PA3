@@ -3,6 +3,8 @@ Created on Oct 12, 2016
 
 @author: mwittie
 '''
+import math
+
 import network_1
 import link_1
 import threading
@@ -46,12 +48,18 @@ if __name__ == '__main__':
 
     # create some send events
     for i in range(3):
-        message = 'this is data message %d, this message is at least 80 characters long, needs to be split' % i
+        message = 'this is data message %d, this message is at least 80 characters long, this message needs to be split' % i
+        loops = math.ceil(len(message)/45.0)
+        iterator = 0
+
         if len(message) > 50:
-            message_1 = message[0:45]
-            client.udt_send(2, message_1)
-            message_2 = message[45:100]
-            client.udt_send(2, message_2)
+            for j in range(loops):
+                client.udt_send(2, message[iterator: iterator + 45])
+                iterator += 45
+            # message_1 = message[0:45]
+            # client.udt_send(2, message_1)
+            # message_2 = message[45:100]
+            # client.udt_send(2, message_2)
         else:
             client.udt_send(2, message)
 
