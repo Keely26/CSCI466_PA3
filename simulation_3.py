@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # created routing tables, pass into the routers
     # 0 (host 1)is the first in interface passes to out interface 0 (Router B)
     # {host to end/or start at: out interface}
-    routing_table_a = {3: 0, 4: 1}
+    routing_table_a = {3: 0, 4: 1, 0: 0, 1: 1}
     router_a = network_3.Router(routing_table_a, name='A', intf_count=2, max_queue_size=router_queue_size)
     object_L.append(router_a)
     routing_table_b = {3: 0, 4: 0}
