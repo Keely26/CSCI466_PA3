@@ -49,9 +49,9 @@ if __name__ == '__main__':
     # create some send events
     for i in range(3):
         message = 'this is data message %d, this message is at least 80 characters long, this message needs to be split' % i
+        # determines the amount of loops necessary
         loops = math.ceil(len(message)/45.0)
         iterator = 0
-
         if len(message) > 50:
             for j in range(loops):
                 client.udt_send(2, message[iterator: iterator + 45])
