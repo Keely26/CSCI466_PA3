@@ -37,6 +37,7 @@ class Interface:
 class NetworkPacket:
     ## packet encoding lengths
     dst_addr_S_length = 5
+
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
     def __init__(self, dst_addr, data_S):
@@ -57,11 +58,9 @@ class NetworkPacket:
     # @param byte_S: byte string representation of the packet
     @classmethod
     def from_byte_S(self, byte_S):
-        dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
-        data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
+        dst_addr = int(byte_S[0: NetworkPacket.dst_addr_S_length])
+        data_S = byte_S[NetworkPacket.dst_addr_S_length:]
         return self(dst_addr, data_S)
-
-
 
 
 ## Implements a network host for receiving and transmitting data
@@ -72,7 +71,7 @@ class Host:
         self.addr = addr
         self.in_intf_L = [Interface()]
         self.out_intf_L = [Interface()]
-        self.stop = False #for thread termination
+        self.stop = False  # for thread termination
 
     ## called when printing the object
     def __str__(self):
@@ -83,7 +82,7 @@ class Host:
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
         p = NetworkPacket(dst_addr, data_S)
-        self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
+        self.out_intf_L[0].put(p.to_byte_S())  # send packets always enqueued successfully
         print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
 
     ## receive packet from the network layer
@@ -94,14 +93,15 @@ class Host:
 
     ## thread target for the host to keep receiving data
     def run(self):
-        print (threading.currentThread().getName() + ': Starting')
+        print(threading.currentThread().getName() + ': Starting')
         while True:
-            #receive data arriving to the in interface
+            # receive data arriving to the in interface
             self.udt_receive()
-            #terminate
-            if(self.stop):
-                print (threading.currentThread().getName() + ': Ending')
+            # terminate
+            if (self.stop):
+                print(threading.currentThread().getName() + ': Ending')
                 return
+
 
 ## Implements a multi-interface router described in class
 class Router:
@@ -110,13 +110,12 @@ class Router:
     # @param intf_count: the number of input and output interfaces
     # @param max_queue_size: max queue length (passed to Interface)
     def __init__(self, routing_table, name, intf_count, max_queue_size):
-        self.stop = False #for thread termination
+        self.stop = False  # for thread termination
         self.name = name
-        #create a list of interfaces
+        # create a list of interfaces
         self.in_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
         self.out_intf_L = [Interface(max_queue_size) for _ in range(intf_count)]
         self.routing_table = routing_table
-
 
     ## called when printing the object
     def __str__(self):
@@ -129,24 +128,29 @@ class Router:
         for i in range(len(self.in_intf_L)):
             pkt_S = None
             try:
-                #get packet from interface i
+                # get packet from interface i
                 pkt_S = self.in_intf_L[i].get()
-                #if packet exists make a forwarding decision
+                # if packet exists make a forwarding decision
                 if pkt_S is not None:
-                    p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
+                    p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
                     # grabs the destination address of the packet and gets the forwarding value from the routing table
-                    self.out_intf_L[self.routing_table[p.dst_addr]].put(p.to_byte_S(), True)
+                    # routes required host 1 to router b and host 2 to router c
+                    if self.name == 'A':
+                        forward = self.routing_table[i]
+                    else:
+                        forward = self.routing_table[p.dst_addr]
+                    self.out_intf_L[forward].put(p.to_byte_S(), True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
-                        % (self, p, i, i, self.out_intf_L[i].mtu))
+                          % (self, p, i, i, self.out_intf_L[i].mtu))
             except queue.Full:
                 print('%s: packet "%s" lost on interface %d' % (self, p, i))
                 pass
 
     ## thread target for the host to keep forwarding data
     def run(self):
-        print (threading.currentThread().getName() + ': Starting')
+        print(threading.currentThread().getName() + ': Starting')
         while True:
             self.forward()
             if self.stop:
-                print (threading.currentThread().getName() + ': Ending')
+                print(threading.currentThread().getName() + ': Ending')
                 return
