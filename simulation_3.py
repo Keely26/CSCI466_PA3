@@ -83,7 +83,7 @@ if __name__ == '__main__':
     for i in range(3):
         message = 'this is data message %d' % i
         # if statement to change which host to send to (host 3 or host 4)
-        if i == 0 or i == 2:
+        if i < 2:
             host_1.udt_send(3, message)
             print("Destination host: 3")
         else:
