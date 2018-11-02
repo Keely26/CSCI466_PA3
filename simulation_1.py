@@ -50,18 +50,19 @@ if __name__ == '__main__':
     for i in range(3):
         message = 'this is data message %d, this message is at least 80 characters long, this message needs to be split' % i
         # determines the amount of loops necessary
-        loops = math.ceil(len(message)/45.0)
-        iterator = 0
-        if len(message) > 50:
-            for j in range(loops):
-                client.udt_send(2, message[iterator: iterator + 45])
-                iterator += 45
-            # message_1 = message[0:45]
-            # client.udt_send(2, message_1)
-            # message_2 = message[45:100]
-            # client.udt_send(2, message_2)
-        else:
-            client.udt_send(2, message)
+        client.udt_send(2, message)
+        # loops = math.ceil(len(message)/45.0)
+        # iterator = 0
+        # if len(message) > 50:
+        #     for j in range(loops):
+        #         client.udt_send(2, message[iterator: iterator + 45])
+        #         iterator += 45
+        #     # message_1 = message[0:45]
+        #     # client.udt_send(2, message_1)
+        #     # message_2 = message[45:100]
+        #     # client.udt_send(2, message_2)
+        # else:
+        #     client.udt_send(2, message)
 
 
 
