@@ -80,13 +80,15 @@ class Host:
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
-        loops = math.ceil(len(data_S) / 45.0)
+        header = 5
+        size = self.out_intf_L[0].mtu - header
+        loops = math.ceil(len(data_S) / size)
         iterator = 0
 
         for j in range(loops):
-            p = NetworkPacket(dst_addr, data_S[iterator: iterator + 45])
+            p = NetworkPacket(dst_addr, data_S[iterator: iterator + size])
             self.out_intf_L[0].put(p.to_byte_S())  # send packets always enqueued successfully
-            iterator += 45
+            iterator += size
             # message_1 = message[0:45]
             # client.udt_send(2, message_1)
             # message_2 = message[45:100]
