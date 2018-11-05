@@ -38,15 +38,17 @@ class NetworkPacket:
     length_S_length = 5 # length of the packet
     if_segment = 1 # value to tell if packet is a segment
     if_last = 1 # flag to tell if segment is last segment of packet
+    message_number = 1
 
 
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
-    def __init__(self, dst_addr, data_S, if_segment, if_last):
+    def __init__(self, dst_addr, data_S, if_segment, if_last, message_number):
         self.dst_addr = dst_addr
         self.data_S = data_S
         self.if_segment = if_segment
         self.if_last = if_last
+        self.message_number = message_number
 
     ## called when printing the object
     def __str__(self):
@@ -54,9 +56,9 @@ class NetworkPacket:
 
     ## convert packet to a byte string for transmission over links
     def to_byte_S(self):
-        byte_S = str(self.dst_addr).zfill(self.dst_addr_S_length - 2) # packet address
+        byte_S = str(self.dst_addr).zfill(self.dst_addr_S_length - 3) # packet address
         # byte_s = if_segment + seg_flag + address + message
-        byte_S = str(self.if_segment) + str(self.if_last) + str(byte_S) + str(self.data_S)
+        byte_S = str(self.if_segment) + str(self.if_last) + str(self.message_number) + str(byte_S) + str(self.data_S)
         # byte_S += self.data_S
         return byte_S
 
@@ -64,14 +66,15 @@ class NetworkPacket:
     # @param byte_S: byte string representation of the packet
     @classmethod
     def from_byte_S(self, byte_S):
-        dst_addr = int(byte_S[2 : NetworkPacket.dst_addr_S_length])
+        dst_addr = int(byte_S[3 : NetworkPacket.dst_addr_S_length])
         # pack_length = int(byte_S[])
         if_last = (byte_S[1])
         if_seg = (byte_S[0])
+        mes_num = byte_S[2]
         data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
         # offset = int(byte_S[NetworkPacket.dst_addr_S_length + NetworkPacket.seg_flag_S_length
         # : NetworkPacket.dst_addr_S_length + NetworkPacket.seg_flag_S_length + NetworkPacket.offset_S_length])
-        return self(dst_addr, data_S, if_seg, if_last)
+        return self(dst_addr, data_S, if_seg, if_last, mes_num)
 
 
 ## Implements a network host for receiving and transmitting data
@@ -91,10 +94,10 @@ class Host:
     ## create a packet and enqueue for transmission
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
-    def udt_send(self, dst_addr, data_S):
-        p = NetworkPacket(dst_addr, data_S, 0, 0)
-        print("IN SEND")
-        print("MTU: ", self.out_intf_L[0].mtu)
+    def udt_send(self, dst_addr, data_S, mes_num):
+        p = NetworkPacket(dst_addr, data_S, 0, 0, mes_num)
+        #print("IN SEND")
+        #print("MTU: ", self.out_intf_L[0].mtu)
         if len(data_S) > self.out_intf_L[0].mtu:
             messages = []
             mes = data_S
@@ -107,11 +110,11 @@ class Host:
             for j in messages: # for each message
                 # print("CURRENT: ", cur)
                 if cur == len(messages) - 1: # if current message is the last
-                    packet = NetworkPacket(dst_addr,j,1,1) # create packet with updated if_last variable
+                    packet = NetworkPacket(dst_addr, j, 1, 1, mes_num) # create packet with updated if_last variable
                     self.out_intf_L[0].put(packet.to_byte_S())
                     print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, packet, self.out_intf_L[0].mtu))
                 else:
-                    packet = NetworkPacket(dst_addr,j,1,0) # create packet that is not last
+                    packet = NetworkPacket(dst_addr, j, 1, 0, mes_num) # create packet that is not last
                     cur += 1 # update number of current packet
                     self.out_intf_L[0].put(packet.to_byte_S())
                     print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, packet, self.out_intf_L[0].mtu))
@@ -120,23 +123,47 @@ class Host:
             self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
             print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
 
-    packets = []
+    packets0 = []
+    packets1 = []
+    packets2 = []
     ## receive packet from the network layer
     def udt_receive(self):
         pkt_S = self.in_intf_L[0].get()
-        message = ''
+        message0 = ''
+        message1 = ''
+        message2 = ''
         if pkt_S is not None:
-            print('%s: received packet "%s" on the in interface' % (self, pkt_S))
+            #print('%s: received packet "%s" on the in interface' % (self, pkt_S))
             #print('IF SEGMENT: ', pkt_S[1])
-            if pkt_S[1] == '0' or pkt_S[1] == '1': # not the last segment
-                self.packets.append(pkt_S) # add packet to list of packets
-            elif pkt_S[1] == '2': # is the last segment
-                self.packets.append(pkt_S)
-                for i in self.packets:
-                    m = i[5:]
-                    message = message + m
-                print('%s: received message: ', message)
+            if pkt_S[2] == '0':
+                if pkt_S[1] == '0' or pkt_S[1] == '1': # not the last segment
+                    self.packets0.append(pkt_S) # add packet to list of packets
+                elif pkt_S[1] == '2': # is the last segment
+                    self.packets0.append(pkt_S)
+                    for i in self.packets0:
+                        m0 = i[5:]
+                        message0 = message0 + m0
+                    print('received message 0: ', message0)
 
+            elif pkt_S[2] == '1':
+                if pkt_S[1] == '0' or pkt_S[1] == '1': # not the last segment
+                    self.packets1.append(pkt_S) # add packet to list of packets
+                elif pkt_S[1] == '2': # is the last segment
+                    self.packets1.append(pkt_S)
+                    for i in self.packets1:
+                        m1 = i[5:]
+                        message1 = message1 + m1
+                    print('received message 1: ', message1)
+
+            elif pkt_S[2] == '2':
+                if pkt_S[1] == '0' or pkt_S[1] == '1': # not the last segment
+                    self.packets2.append(pkt_S) # add packet to list of packets
+                elif pkt_S[1] == '2': # is the last segment
+                    self.packets2.append(pkt_S)
+                    for i in self.packets2:
+                        m2 = i[5:]
+                        message2 = message2 + m2
+                    print('received message 2: ', message2)
 
 
     ## thread target for the host to keep receiving data
@@ -181,14 +208,13 @@ class Router:
                 if pkt_S is not None:
                     p = NetworkPacket.from_byte_S(pkt_S) #parse a packet out
                     data_S = pkt_S[5:]
-                    dst_address = pkt_S[2:5]
-                    if_seg = pkt_S[0]
-                    if_last = pkt_S[1]
+                    dst_address = pkt_S[3:5]
                     if len(data_S) > self.out_intf_L[0].mtu:
                         # packet is too long
                         cur = 0
                         mes = data_S
                         messages = [] # variable to store parsed message
+                        mes_num = int(pkt_S[2])
                         packets = [] #variable to store list of packets
                         while (len(mes)>self.out_intf_L[0].mtu - 5):
                             messages.append(''.join(mes[:self.out_intf_L[0].mtu - 5])) # add split messages to array
@@ -202,18 +228,18 @@ class Router:
                                 #print("IN LAST")
                                 if pkt_S[1] == '1':
                                     #print("IN IF LAST")
-                                    packet = NetworkPacket(dst_address,j,1,2) # create packet with updated if_last variable
+                                    packet = NetworkPacket(dst_address,j,1,2, mes_num) # create packet with updated if_last variable
                                     self.out_intf_L[0].put(packet.to_byte_S())
                                     print('%s: forwarding packet "%s"'\
                                       % (self, packet))
                                 else:
                                     #print("IN IF NOT LAST")
-                                    packet = NetworkPacket(dst_address,j,1,1) # create packet with updated if_last variable
+                                    packet = NetworkPacket(dst_address,j,1,1, mes_num) # create packet with updated if_last variable
                                     self.out_intf_L[0].put(packet.to_byte_S())
                                     print('%s: forwarding packet "%s"' \
                                           % (self, packet))
                             else:
-                                packet = NetworkPacket(dst_address,j,1,0) # create packet that is not last
+                                packet = NetworkPacket(dst_address,j,1,0, mes_num) # create packet that is not last
                                 cur += 1 # update number of current packet
                                 self.out_intf_L[0].put(packet.to_byte_S())
                                 print('%s: forwarding packet "%s"' \
