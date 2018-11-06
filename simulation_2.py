@@ -45,10 +45,23 @@ if __name__ == '__main__':
         t.start()
 
     # create some send events
+
+    #message = 'THIS IS DATA MESSAGE 0, THIS MESSAGE IS AT LEAST 80 CHARACTERS LONG AND NEEDS TO BE SPLIT'
+    #client.udt_send(2, message)
+
     for i in range(3):
-        message = 'this is data message %d, this message is at least 80 characters long, this message needs to be split' % i
-        # determines the amount of loops necessary
-        client.udt_send(2, message)
+        message = 'this is data message %d, this message is at least 80 characters long that needs to be split' % i
+        client.udt_send(2, message, i)
+
+        '''
+        if len(message) > 50:
+            message_1 = message[0:45]
+            client.udt_send(2, message_1)
+            message_2 = message[45:100]
+            client.udt_send(2, message_2)
+        else:
+            client.udt_send(2, message)
+            '''
 
 
 
